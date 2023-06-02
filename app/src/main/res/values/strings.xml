@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">StudentTrack</string>
+    <string-array name="usertype">
+        <item>Professor</item>
+        <item>Student</item>
+    </string-array>
+</resources>
