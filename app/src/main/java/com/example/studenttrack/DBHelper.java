@@ -14,40 +14,50 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String TABLE_USERS = "users";
     public static final String COLUMN_USERNAME = "username";
     public static final String COLUMN_PASSWORD = "password";
+
+    public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_USER_TYPE = "user_type";
 
+    public static final String COLUMN_COURSE = "course";
+    public static final String COLUMN_APOGEE = "apogee";
+    public static final String COLUMN_FIELD = "field";
+
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 1);
+        super(context, DBNAME, null, 3);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_USERS + " ("
-                + COLUMN_USERNAME + " TEXT PRIMARY KEY, "
-                + COLUMN_PASSWORD + " TEXT, "
-                + COLUMN_USER_TYPE + " TEXT)");
+        String createTableQuery = "CREATE TABLE " + TABLE_USERS + " (" +
+                COLUMN_USERNAME + " TEXT PRIMARY KEY, " +
+                COLUMN_PASSWORD + " TEXT, " +
+                COLUMN_EMAIL + " TEXT, " +
+                COLUMN_USER_TYPE + " TEXT, " +
+                COLUMN_COURSE + " TEXT, " +
+                COLUMN_APOGEE + " TEXT, " +
+                COLUMN_FIELD + " TEXT)";
+        db.execSQL(createTableQuery);
     }
 
+
     @Override
-    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         onCreate(db);
     }
 
-    public Boolean insertData(String username, String password, String userType) {
+    public Boolean insertData(String username, String password, String userType, String course, String apogee, String field, String email) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-
         values.put(COLUMN_USERNAME, username);
         values.put(COLUMN_PASSWORD, password);
+        values.put(COLUMN_EMAIL, email);
         values.put(COLUMN_USER_TYPE, userType);
-
+        values.put(COLUMN_COURSE, course);
+        values.put(COLUMN_APOGEE, apogee);
+        values.put(COLUMN_FIELD, field);
         long result = db.insert(TABLE_USERS, null, values);
-        if (result == -1) {
-            return false;
-        } else {
-            return true;
-        }
+        return result != -1;
     }
 
 
@@ -88,6 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         return null;
     }
+
 
 }
 
