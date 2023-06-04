@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                if (TextUtils.isEmpty(user) || TextUtils.isEmpty(pass) || TextUtils.isEmpty(repass)) {
+                if (TextUtils.isEmpty(user) || TextUtils.isEmpty(pass) || TextUtils.isEmpty(repass) || TextUtils.isEmpty(emailValue)) {
                     Toast.makeText(MainActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
                 } else if (!pass.equals(repass)) {
                     Toast.makeText(MainActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
