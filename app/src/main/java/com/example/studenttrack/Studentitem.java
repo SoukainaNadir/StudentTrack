@@ -2,17 +2,22 @@ package com.example.studenttrack;
 
 public class Studentitem {
 
-    private String roll;
+    private int roll;
     private String name;
     private String status;
 
-    public Studentitem(String roll, String name) {
+
+
+    private long sid;
+
+    public Studentitem(long sid, int roll, String name) {
+        this.sid = sid;
         this.roll = roll;
         this.name = name;
         status="";
     }
 
-    public void setRoll(String roll) {
+    public void setRoll(int roll) {
         this.roll = roll;
     }
 
@@ -24,7 +29,7 @@ public class Studentitem {
         this.status = status;
     }
 
-    public String getRoll() {
+    public int getRoll() {
         return roll;
     }
 
@@ -35,6 +40,15 @@ public class Studentitem {
     public String getStatus() {
         return status;
     }
+
+    public long getSid() {
+        return sid;
+    }
+
+    public void setSid(long sid) {
+        this.sid = sid;
+    }
+
 
 
 }

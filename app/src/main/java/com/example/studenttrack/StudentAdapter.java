@@ -2,6 +2,7 @@ package com.example.studenttrack;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHold
         this.studentitems = studentitems;
         this.context = context;
     }
-    public static class StudentViewHolder extends RecyclerView.ViewHolder{
+    public static class StudentViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
 
         TextView roll;
         TextView name;
@@ -45,6 +46,13 @@ class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHold
             status= itemView.findViewById(R.id.status);
             cardView = itemView.findViewById(R.id.cardview);
             itemView.setOnClickListener(v->onItemClickListener.onClick(getAdapterPosition()));
+            itemView.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(getAdapterPosition(),0,0,"Edit");
+            menu.add(getAdapterPosition(),1,0,"Delete");
         }
     }
 
@@ -57,7 +65,7 @@ class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHold
 
     @Override
     public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
-        holder.roll.setText(studentitems.get(position).getRoll());
+        holder.roll.setText(studentitems.get(position).getRoll()+"");
         holder.name.setText(studentitems.get(position).getName());
         holder.status.setText(studentitems.get(position).getStatus());
         holder.cardView.setCardBackgroundColor(getColor(position));

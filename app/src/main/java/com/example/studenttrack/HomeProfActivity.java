@@ -33,6 +33,7 @@ public class HomeProfActivity extends AppCompatActivity {
     DBHelper dbHelper;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +93,7 @@ public class HomeProfActivity extends AppCompatActivity {
         intent.putExtra("ClassName", classitems.get(position).getClass());
         intent.putExtra("subjectName", classitems.get(position).getClass());
         intent.putExtra("position", position);
+        intent.putExtra("cid", classitems.get(position).getCid());
         startActivity(intent);
     }
 
