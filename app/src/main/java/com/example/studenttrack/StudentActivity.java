@@ -42,7 +42,7 @@ public class StudentActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new StudentAdapter(this, studentitems);
         recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(position1 -> changeStatus(position));
+        adapter.setOnItemClickListener(position -> changeStatus(position));
 
     }
 

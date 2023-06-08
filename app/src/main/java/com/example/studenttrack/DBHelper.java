@@ -26,23 +26,21 @@ public class DBHelper extends SQLiteOpenHelper {
     //class table
 
     private static final String CLASS_TABLE_NAME = "CLASS_TABLE";
-    private static final String C_ID = "CID";
-    private static final String CLASS_NAME_KEY = "CLASS NAME";
-    private static final String SUBJECT_NAME_KEY = "SUBJECT NAME";
+    public static final String C_ID = "_CID";
+    public static final String CLASS_NAME_KEY = "CLASS_NAME";
+    public static final String SUBJECT_NAME_KEY = "SUBJECT_NAME";
+
     private static final String CREATE_CLASS_TABLE =
-            "CREATE TABLE " + CLASS_TABLE_NAME + "(" +
+            "CREATE TABLE " + CLASS_TABLE_NAME + "( " +
                     C_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                     CLASS_NAME_KEY + " TEXT NOT NULL, " +
                     SUBJECT_NAME_KEY + " TEXT NOT NULL, " +
-                    "UNIQUE ( " + CLASS_NAME_KEY + " , " + SUBJECT_NAME_KEY + ")" +
+                    "UNIQUE (" + CLASS_NAME_KEY + "," + SUBJECT_NAME_KEY + ")" +
                     ");";
 
+    private static final String DROP_CLASS_TABLE = "DROP TABLE IF EXISTS " + CLASS_TABLE_NAME;
+    private static final String SELECT_CLASS_TABLE = "SELECT * FROM " + CLASS_TABLE_NAME;
 
-
-
-
-    private static final String DROP_CLASS_TABLE = "DROP TABLE IF EXISTS "+CLASS_TABLE_NAME;
-    private static final String SELECT_CLASS_TABLE = "SELECT * FROM "+CLASS_TABLE_NAME;
 
     //student table
 
@@ -120,6 +118,22 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    long addClass (String className , String subjectName){
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CLASS_NAME_KEY, className);
+        values.put(SUBJECT_NAME_KEY, subjectName);
+
+        return database.insert(CLASS_TABLE_NAME, null, values );
+    }
+
+    Cursor getClassTable(){
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        return database.rawQuery(SELECT_CLASS_TABLE,null);
+    }
+
+
     public Boolean insertData(String username, String password, String userType, String course, String apogee, String field, String email) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -171,6 +185,20 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return null;
+    }
+
+    int deleteClass(long cid){
+        SQLiteDatabase database = this.getReadableDatabase();
+        return database.delete(CLASS_TABLE_NAME,C_ID+"=?",new String[]{String.valueOf(cid)});
+    }
+
+    long updateClass (long cid, String className, String subjectName){
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CLASS_NAME_KEY, className);
+        values.put(SUBJECT_NAME_KEY, subjectName);
+
+        return database.update(CLASS_TABLE_NAME, values,C_ID+"=?",new String[]{String.valueOf(cid)});
     }
 
 
