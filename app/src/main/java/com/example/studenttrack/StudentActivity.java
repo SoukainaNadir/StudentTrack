@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,11 @@ public class StudentActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<Studentitem> studentitems = new ArrayList<>();
     private DBHelper dbHelper;
-    private int cid;
+    private long cid;
+    private MyCalendar calendar ;
+    private TextView subtitle;
+
+
 
 
     @Override
@@ -36,16 +41,20 @@ public class StudentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
 
+        calendar = new MyCalendar();
         dbHelper = new DBHelper(this);
         Intent intent = getIntent();
         className = intent.getStringExtra("className");
         subjectName = intent.getStringExtra("subjectName");
         position = intent.getIntExtra("position", -1);
-        cid = intent.getIntExtra("cid", -1);
+        cid = intent.getLongExtra("cid", -1);
+
+
 
 
         setToolbar();
         loadData();
+
         recyclerView = findViewById(R.id.student_recycler);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
@@ -53,6 +62,7 @@ public class StudentActivity extends AppCompatActivity {
         adapter = new StudentAdapter(this, studentitems);
         recyclerView.setAdapter(adapter);
         adapter.setOnItemClickListener(position -> changeStatus(position));
+        loadStatusData();
 
     }
 
@@ -81,12 +91,13 @@ public class StudentActivity extends AppCompatActivity {
     private void setToolbar() {
         toolbar = findViewById(R.id.toolbar);
         TextView title = toolbar.findViewById(R.id.title_toolbar);
-        TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
+        subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
         ImageButton back = toolbar.findViewById(R.id.back);
         ImageButton save = toolbar.findViewById(R.id.save);
+        save.setOnClickListener(v->saveStatus());
 
         title.setText(className);
-        subtitle.setText(subjectName);
+        subtitle.setText(subjectName+" | "+calendar.getDate());
 
         back.setOnClickListener(v->onBackPressed());
         toolbar.inflateMenu(R.menu.student_menu);
@@ -94,13 +105,75 @@ public class StudentActivity extends AppCompatActivity {
 
     }
 
+    private void saveStatus(){
+        for(Studentitem studentitem : studentitems){
+            String status = studentitem.getStatus();
+            if(!status.equals("P"))
+                status = "A";
+            long value = dbHelper.addStatus(studentitem.getSid(),cid,calendar.getDate(),status);
+
+            if(value == -1)
+                dbHelper.updateStatus(studentitem.getSid(),calendar.getDate(),status);
+        }
+        Toast.makeText(this, "Save successful", Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadStatusData(){
+        for(Studentitem studentitem : studentitems){
+            String status = dbHelper.getStatus(studentitem.getSid(),calendar.getDate());
+            if (status != null) studentitem.setStatus(status);
+            else studentitem.setStatus("");
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+
+
     private boolean onMenuItemClick(MenuItem menuItem) {
         if(menuItem.getItemId()== R.id.add_student){
             showAddStudentDialog();
         }
+        else if(menuItem.getItemId()== R.id.show_Calendar){
+            showCalendar();
+        }
+        else if(menuItem.getItemId()== R.id.show_attendance_sheet){
+            openSheetList();
+        }
         return true;
     }
 
+    private void openSheetList() {
+        long[] idArray = new long[studentitems.size()];
+        String[] nameArray = new String[studentitems.size()];
+        int[] rollArray = new int[studentitems.size()];
+
+        for (int i = 0; i < idArray.length; i++)
+            idArray[i] = studentitems.get(i).getSid();
+        for (int i = 0; i < rollArray.length; i++)
+            rollArray[i] = studentitems.get(i).getRoll();
+        for (int i = 0; i < nameArray.length; i++)
+            nameArray[i] = studentitems.get(i).getName();
+
+        Intent intent = new Intent(this,SheetListActivity.class);
+        intent.putExtra("cid",cid);
+        intent.putExtra("idArray",idArray);
+        intent.putExtra("rollArray",rollArray);
+        intent.putExtra("nameArray",nameArray);
+
+        startActivity(intent);
+    }
+
+    private void showCalendar() {
+
+        calendar.show(getSupportFragmentManager(),"");
+        calendar.setOnCalendarOkClickListener(this::onCalendarOkClicked);
+    }
+
+    private void onCalendarOkClicked(int year,int month,int day){
+        calendar.setDate(year, month, day);
+        subtitle.setText(subjectName+" | "+calendar.getDate());
+        loadStatusData();
+    }
     private void showAddStudentDialog() {
         MyDialog dialog = new MyDialog();
         dialog.show(getSupportFragmentManager(),MyDialog.STUDENT_ADD_DIALOG);
