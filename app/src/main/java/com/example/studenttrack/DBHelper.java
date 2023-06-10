@@ -1,15 +1,11 @@
 package com.example.studenttrack;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.renderscript.Sampler;
-
-import androidx.annotation.Nullable;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -67,7 +63,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //STATUS TABLE
 
-    private static final String STATUS_TABLE_NAME = "STATUS_TABLE";
+    public static final String STATUS_TABLE_NAME = "STATUS_TABLE";
     public static final String STATUS_ID = "STATUS_ID";
     public static final String DATE_KEY = "STATUS_DATE";
     public static final String STATUS_KEY = "STATUS";
@@ -262,6 +258,23 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getReadableDatabase();
         return database.query(STATUS_TABLE_NAME,new String[]{DATE_KEY},C_ID+"="+cid,null,"substr("+DATE_KEY+",4,7)",null,null);
     }
+
+    public Cursor countStudentAbsences() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        String[] columns = {S_ID, "COUNT(" + STATUS_KEY + ") AS AbsenceCount"};
+        String selection = STATUS_KEY + " = ?";
+        String[] selectionArgs = {"A"};
+        String groupBy = S_ID;
+        Cursor cursor = database.query(STATUS_TABLE_NAME, columns, selection, selectionArgs, groupBy, null, null);
+        return cursor;
+    }
+
+
+
+
+
+
+
 
 
 }

@@ -1,12 +1,18 @@
 package com.example.studenttrack;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
+
 
 import java.util.ArrayList;
 
@@ -15,6 +21,9 @@ public class SheetListActivity extends AppCompatActivity {
     private ArrayAdapter adapter;
     private ArrayList<String> listItems = new ArrayList();
     private long cid;
+    Toolbar toolbar;
+    private String className;
+    private String subjectName;
 
 
     @Override
@@ -28,18 +37,56 @@ public class SheetListActivity extends AppCompatActivity {
         adapter = new ArrayAdapter(this,R.layout.sheet_list,R.id.date_list_item,listItems);
         sheetList.setAdapter(adapter);
 
-        sheetList.setOnClickListener((parent,view,position,id)->openSheetActivity(position));
+        sheetList.setOnItemClickListener((parent,view,position,id)->openSheetActivity(position));
+
+        cid = getIntent().getLongExtra("cid", -1);
+        className = getIntent().getStringExtra("className");
+        subjectName = getIntent().getStringExtra("subjectName");
+
+        setToolbar();
     }
 
+    private void setToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+
+        // Find the views for title, subtitle, and back button
+        TextView title = toolbar.findViewById(R.id.title_toolbar);
+        TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
+        ImageButton backButton = findViewById(R.id.back);
+
+
+        Log.d("SheetActivity", "className: " + className);
+        Log.d("SheetActivity", "subjectName: " + subjectName);
+
+        // Set the title and subtitle text
+        title.setText(className);
+        subtitle.setText(subjectName);
+
+        // Set a click listener for the back button
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle back button click
+                onBackPressed();
+            }
+        });
+
+        // Hide the save button
+        ImageButton saveButton = findViewById(R.id.save);
+        saveButton.setVisibility(View.GONE);
+    }
     private void openSheetActivity(int position) {
         long[] idArray = getIntent().getLongArrayExtra("idArray");
         int[] rollArray = getIntent().getIntArrayExtra("rollArray");
         String[] nameArray = getIntent().getStringArrayExtra("nameArray");
-        Intent intent = new Intent(this,SheetActivity.class);
-        intent.putExtra("idArray",idArray);
-        intent.putExtra("rollArray",rollArray);
-        intent.putExtra("nameArray",nameArray);
-        intent.putExtra("month",listItems.get(position));
+        Intent intent = new Intent(this, SheetActivity.class);
+        intent.putExtra("idArray", idArray);
+        intent.putExtra("rollArray", rollArray);
+        intent.putExtra("nameArray", nameArray);
+        intent.putExtra("month", listItems.get(position));
+        intent.putExtra("className", className);
+        intent.putExtra("subjectName", subjectName);
 
         startActivity(intent);
 

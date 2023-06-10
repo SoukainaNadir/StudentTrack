@@ -2,25 +2,65 @@ package com.example.studenttrack;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
+
 
 import java.lang.reflect.Type;
 import java.util.Calendar;
+import java.util.EventListener;
 
 public class SheetActivity extends AppCompatActivity {
-
+    Toolbar toolbar;
+    private String className;
+    private String subjectName;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheet);
 
+        className = getIntent().getStringExtra("className");
+        subjectName = getIntent().getStringExtra("subjectName");
+
+
+        setToolbar();
         showTable();
     }
+
+    private void setToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        TextView title = toolbar.findViewById(R.id.title_toolbar);
+        TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
+        ImageButton backButton = findViewById(R.id.back);
+
+        title.setText(className);
+        subtitle.setText(subjectName);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle back button click
+                onBackPressed();
+            }
+        });
+
+        ImageButton saveButton = findViewById(R.id.save);
+        saveButton.setVisibility(View.GONE);
+    }
+
 
     private void showTable() {
         DBHelper dbHelper = new DBHelper(this);
@@ -59,11 +99,11 @@ public class SheetActivity extends AppCompatActivity {
             status_tvs[0][i].setTypeface(status_tvs[0][i].getTypeface(),Typeface.BOLD);
         }
 
-        for (int i = 0; i<rowSize;i++){
-            roll_tvs[i].setText(String.valueOf(rollArray[i-1]));
+        for (int i = 1; i < rowSize;i++){
+            roll_tvs[i].setText(String.valueOf(rollArray[i - 1]));
             name_tvs[i].setText(nameArray[i-1]);
 
-            for (int j=1; j<= DAY_IN_MONTH; j++){
+            for (int j=1; j <= DAY_IN_MONTH; j++){
                 String day = String.valueOf(j);
                 if ( day.length()==1) day = "0"+day;
                 String date = day+"."+month;
@@ -75,6 +115,9 @@ public class SheetActivity extends AppCompatActivity {
         for (int i= 0 ; i< rowSize; i++){
             rows[i] = new TableRow(this);
 
+            if(i%2 == 0)
+                rows[i].setBackgroundColor(Color.parseColor("#EEEEEE"));
+            else rows[i].setBackgroundColor(Color.parseColor("#E4E4E4"));
             roll_tvs[i].setPadding(16,16,16,16);
             name_tvs[i].setPadding(16,16,16,16);
 
@@ -82,12 +125,13 @@ public class SheetActivity extends AppCompatActivity {
             rows[i].addView(roll_tvs[i]);
             rows[i].addView(name_tvs[i]);
 
-            for (int j=0; j<= DAY_IN_MONTH; j++){
+            for (int j=1; j<= DAY_IN_MONTH; j++){
                 status_tvs[i][j].setPadding(16,16,16,16);
                 rows[i].addView(status_tvs[i][j]);
             }
             tableLayout.addView(rows[i]);
         }
+        tableLayout.setShowDividers(TableLayout.SHOW_DIVIDER_MIDDLE);
 
     }
 

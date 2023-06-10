@@ -89,12 +89,13 @@ public class HomeProfActivity extends AppCompatActivity {
 
     private void gotoItemActivity(int position) {
         Intent intent = new Intent(this,StudentActivity.class);
-
-        intent.putExtra("ClassName", classitems.get(position).getClass());
-        intent.putExtra("subjectName", classitems.get(position).getClass());
+        intent.putExtra("className", classitems.get(position).getClassName());
+        intent.putExtra("subjectName", classitems.get(position).getSubjectName());
         intent.putExtra("position", position);
         intent.putExtra("cid", classitems.get(position).getCid());
         startActivity(intent);
+
+
     }
 
     private void showDialog(){

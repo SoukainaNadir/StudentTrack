@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +33,7 @@ public class StudentActivity extends AppCompatActivity {
     private long cid;
     private MyCalendar calendar ;
     private TextView subtitle;
+    private TextView title;
 
 
 
@@ -90,11 +92,13 @@ public class StudentActivity extends AppCompatActivity {
 
     private void setToolbar() {
         toolbar = findViewById(R.id.toolbar);
-        TextView title = toolbar.findViewById(R.id.title_toolbar);
+        title = toolbar.findViewById(R.id.title_toolbar);
         subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
         ImageButton back = toolbar.findViewById(R.id.back);
         ImageButton save = toolbar.findViewById(R.id.save);
         save.setOnClickListener(v->saveStatus());
+        Log.d("SheetActivity", "className: " + className);
+        Log.d("SheetActivity", "subjectName: " + subjectName);
 
         title.setText(className);
         subtitle.setText(subjectName+" | "+calendar.getDate());
@@ -125,7 +129,10 @@ public class StudentActivity extends AppCompatActivity {
             else studentitem.setStatus("");
         }
         adapter.notifyDataSetChanged();
+
+
     }
+
 
 
 
@@ -159,6 +166,8 @@ public class StudentActivity extends AppCompatActivity {
         intent.putExtra("idArray",idArray);
         intent.putExtra("rollArray",rollArray);
         intent.putExtra("nameArray",nameArray);
+        intent.putExtra("className", className);
+        intent.putExtra("subjectName", subjectName);
 
         startActivity(intent);
     }
@@ -196,10 +205,28 @@ public class StudentActivity extends AppCompatActivity {
                 break;
             case 1:
                 deleteStudent(item.getGroupId());
+            case 2:
+                openAbsentDetails(item.getGroupId());
+                break;
+
         }
 
         return super.onContextItemSelected(item);
     }
+
+    private void openAbsentDetails(int position) {
+        Studentitem studentitem = studentitems.get(position);
+
+        Intent intent = new Intent(this, AbsentDetailsActivity.class);
+        intent.putExtra("className", className);
+        intent.putExtra("subjectName", subjectName);
+        intent.putExtra("roll", studentitem.getRoll());
+
+
+
+        startActivity(intent);
+    }
+
 
     private void showUpdateStudentDialog(int position) {
         MyDialog dialog = new MyDialog(studentitems.get(position).getRoll(),studentitems.get(position).getName());

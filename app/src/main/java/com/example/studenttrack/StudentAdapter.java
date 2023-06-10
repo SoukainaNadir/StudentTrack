@@ -1,9 +1,11 @@
 package com.example.studenttrack;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
-    ArrayList<Studentitem> studentitems;
-    Context context;
+    static ArrayList<Studentitem> studentitems;
+    static Context context;
 
     private OnItemClickListener onItemClickListener;
     public interface OnItemClickListener{
@@ -53,6 +55,8 @@ class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHold
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.add(getAdapterPosition(),0,0,"Edit");
             menu.add(getAdapterPosition(),1,0,"Delete");
+            menu.add(getAdapterPosition(), 2, 0, "Details");
+
         }
     }
 
