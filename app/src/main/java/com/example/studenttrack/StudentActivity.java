@@ -43,6 +43,9 @@ public class StudentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
 
+
+
+
         calendar = new MyCalendar();
         dbHelper = new DBHelper(this);
         Intent intent = getIntent();
@@ -74,8 +77,9 @@ public class StudentActivity extends AppCompatActivity {
         while (cursor.moveToNext()){
             long sid = cursor.getLong(cursor.getColumnIndexOrThrow(DBHelper.S_ID));
             int roll = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STUDENT_ROLL_KEY));
+            int apogee = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COLUMN_APOGEE));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STUDENT_NAME_KEY));
-            studentitems.add(new Studentitem(sid, roll, name));
+            studentitems.add(new Studentitem(sid, roll, name,apogee));
         }
         cursor.close();
     }
@@ -186,13 +190,14 @@ public class StudentActivity extends AppCompatActivity {
     private void showAddStudentDialog() {
         MyDialog dialog = new MyDialog();
         dialog.show(getSupportFragmentManager(),MyDialog.STUDENT_ADD_DIALOG);
-        dialog.setListener((roll,name)->addStudent(roll,name));
+        dialog.setListener1((roll,name,apogee)->addStudent(roll,name,apogee));
     }
 
-    private void addStudent(String roll_string, String name) {
+    private void addStudent(String roll_string, String name, String apogee_string) {
         int roll = Integer.parseInt(roll_string);
-        long sid = dbHelper.addStudent(cid,roll,name);
-        Studentitem  studentitem = new Studentitem(sid,roll,name);
+        int apogee = Integer.parseInt(apogee_string);
+        long sid = dbHelper.addStudent(cid,roll,name,apogee);
+        Studentitem  studentitem = new Studentitem(sid,roll,name,apogee);
         studentitems.add(studentitem);
         adapter.notifyDataSetChanged();
     }
@@ -205,6 +210,7 @@ public class StudentActivity extends AppCompatActivity {
                 break;
             case 1:
                 deleteStudent(item.getGroupId());
+                break;
             case 2:
                 openAbsentDetails(item.getGroupId());
                 break;
@@ -220,30 +226,37 @@ public class StudentActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AbsentDetailsActivity.class);
         intent.putExtra("className", className);
         intent.putExtra("subjectName", subjectName);
+        intent.putExtra("studentName", studentitem.getName());
         intent.putExtra("roll", studentitem.getRoll());
-
-
+        intent.putExtra("apogee", studentitem.getApogee());
 
         startActivity(intent);
     }
 
 
     private void showUpdateStudentDialog(int position) {
-        MyDialog dialog = new MyDialog(studentitems.get(position).getRoll(),studentitems.get(position).getName());
+        MyDialog dialog = new MyDialog(studentitems.get(position).getRoll(),studentitems.get(position).getName(),studentitems.get(position).getApogee());
         dialog.show(getSupportFragmentManager(),MyDialog.STUDENT_UPDATE_DIALOG);
-        dialog.setListener((roll_string,name)->updateStudent(position,name));
+        dialog.setListener1((roll_string,name,apogee)->updateStudent(position,name,Integer.parseInt(apogee)));
     }
 
-    private void updateStudent(int position, String name) {
-        dbHelper.updateStudent(studentitems.get(position).getSid(),name);
+    private void updateStudent(int position, String name, int apogee) {
+        dbHelper.updateStudent(studentitems.get(position).getSid(),name, apogee);
         studentitems.get(position).setName(name);
         adapter.notifyItemChanged(position);
     }
 
 
     private void deleteStudent(int position) {
-        dbHelper.deleteStudent(studentitems.get(position).getSid());
+        long studentId = studentitems.get(position).getSid();
+        String studentName = studentitems.get(position).getName();
+        dbHelper.deleteStudent(studentId);
         studentitems.remove(position);
         adapter.notifyItemRemoved(position);
+
+        // Show a message in the current activity
+        Toast.makeText(this, "Student " + studentName + " deleted successfully", Toast.LENGTH_SHORT).show();
+
+
     }
 }

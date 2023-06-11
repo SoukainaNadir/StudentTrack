@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
-
     public static final String DBNAME = "absent.db";
     public static final String TABLE_USERS = "users";
     public static final String COLUMN_USERNAME = "username";
@@ -48,13 +47,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String STUDENT_ROLL_KEY = "ROLL";
 
     private static final String CREATE_STUDENT_TABLE =
-            "CREATE TABLE "+ STUDENT_TABLE_NAME +
-                    "("+
-                    S_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "+
-                    C_ID + " INTEGER NOT NULL, "+
-                    STUDENT_NAME_KEY + " TEXT NOT NULL, "+
-                    STUDENT_ROLL_KEY + " INEGER, "+
-                    " FOREIGN KEY ( "+C_ID+") REFERENCES "+ CLASS_TABLE_NAME + "("+C_ID+")"+
+            "CREATE TABLE " + STUDENT_TABLE_NAME + "(" +
+                    S_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    C_ID + " INTEGER NOT NULL, " +
+                    STUDENT_NAME_KEY + " TEXT NOT NULL, " +
+                    STUDENT_ROLL_KEY + " INTEGER, " +
+                    COLUMN_APOGEE + " INTEGER NOT NULL, " +
+                    "FOREIGN KEY (" + C_ID + ") REFERENCES " + CLASS_TABLE_NAME + "(" + C_ID + "), " +
+                    "FOREIGN KEY (" + COLUMN_APOGEE + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_APOGEE + ")" +
                     ");";
 
     private static final String DROP_STUDENT_TABLE = "DROP TABLE IF EXISTS "+STUDENT_TABLE_NAME;
@@ -200,12 +200,13 @@ public class DBHelper extends SQLiteOpenHelper {
         return database.update(CLASS_TABLE_NAME, values,C_ID+"=?",new String[]{String.valueOf(cid)});
     }
 
-    long addStudent(long cid, int roll, String name){
+    long addStudent(long cid, int roll, String name, int apogee){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(C_ID,cid);
         values.put(STUDENT_ROLL_KEY,roll);
         values.put(STUDENT_NAME_KEY,name);
+        values.put(COLUMN_APOGEE,apogee);
         return database.insert(STUDENT_TABLE_NAME,null,values);
     }
 
@@ -219,10 +220,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return database.delete(STUDENT_TABLE_NAME,S_ID+"=?",new String[]{String.valueOf(sid)});
     }
 
-    long updateStudent(long sid, String name){
+    long updateStudent(long sid, String name, int apogee){
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(STUDENT_NAME_KEY,name);
+        values.put(COLUMN_APOGEE,apogee);
 
         return database.update(STUDENT_TABLE_NAME,values,S_ID+"=?",new String[]{String.valueOf(sid)});
     }
@@ -259,6 +261,22 @@ public class DBHelper extends SQLiteOpenHelper {
         return database.query(STATUS_TABLE_NAME,new String[]{DATE_KEY},C_ID+"="+cid,null,"substr("+DATE_KEY+",4,7)",null,null);
     }
 
+
+
+    public int getStudentApogee(long studentId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int apogee = -1;
+
+        Cursor cursor = db.query(STUDENT_TABLE_NAME, new String[]{COLUMN_APOGEE}, S_ID + "=?",
+                new String[]{String.valueOf(studentId)}, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            apogee = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_APOGEE));
+            cursor.close();
+        }
+        return apogee;
+    }
+
+
     public Cursor countStudentAbsences() {
         SQLiteDatabase database = this.getReadableDatabase();
         String[] columns = {S_ID, "COUNT(" + STATUS_KEY + ") AS AbsenceCount"};
@@ -268,8 +286,6 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = database.query(STATUS_TABLE_NAME, columns, selection, selectionArgs, groupBy, null, null);
         return cursor;
     }
-
-
 
 
 

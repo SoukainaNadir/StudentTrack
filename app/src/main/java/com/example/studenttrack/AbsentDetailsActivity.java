@@ -10,40 +10,58 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AbsentDetailsActivity extends AppCompatActivity {
 
-    private String className;
-    private String subjectName;
+
+    private String studentName;
 
     private int roll;
-
+    private int apogee;
 
     private TextView rollTextView;
+    private TextView apogee_textview;
 
     private DBHelper dbHelper;
-    TextView attendance_count_textview;
+    private TextView attendance_count_textview;
 
-
+    private int studentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_absent_details);
 
+        dbHelper = new DBHelper(this);
 
-        className = getIntent().getStringExtra("className");
-        subjectName = getIntent().getStringExtra("subjectName");
+        studentName = getIntent().getStringExtra("studentName");
         roll = getIntent().getIntExtra("roll", 0);
+        apogee = getIntent().getIntExtra("apogee", 0);
 
 
 
+
+
+
+
+        rollTextView = findViewById(R.id.roll_textview);
+        rollTextView.setText(String.valueOf(roll));
+
+        apogee_textview = findViewById(R.id.apogee_textview);
+        String apogeeValue = String.valueOf(apogee);
+
+        // Fetch and display the updated apogee from the database
+        int updatedApogee = dbHelper.getStudentApogee(roll);
+        if (updatedApogee != -1) {
+            apogeeValue = String.valueOf(updatedApogee);
+        }
+
+        apogee_textview.setText(apogeeValue);
 
         // Find the TextView in your layout
         attendance_count_textview = findViewById(R.id.attendance_count_textview);
 
-        // Create an instance of DBHelper
-        dbHelper = new DBHelper(this);
 
         // Retrieve the cursor with absence count for each student
         Cursor cursor = dbHelper.countStudentAbsences();
@@ -52,8 +70,9 @@ public class AbsentDetailsActivity extends AppCompatActivity {
         int absenceCount = 0;
         if (cursor.moveToFirst()) {
             do {
-                int studentId = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.S_ID));
-                if (studentId == roll) {
+                int sid = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.S_ID));
+
+                if (sid == roll) {
                     absenceCount = cursor.getInt(cursor.getColumnIndexOrThrow("AbsenceCount"));
                     break;
                 }
@@ -64,37 +83,19 @@ public class AbsentDetailsActivity extends AppCompatActivity {
         // Set the absence count string as the text of the TextView
         attendance_count_textview.setText(String.valueOf(absenceCount));
 
-
-        rollTextView = findViewById(R.id.roll_textview);
-        rollTextView.setText(String.valueOf(roll));
-
         setToolbar();
-
 
     }
 
 
-
-
-
     private void setToolbar() {
-            Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
 
-
-            // Find the views for title, subtitle, and back button
-            TextView title = toolbar.findViewById(R.id.title_toolbar);
-            TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
+        TextView title = toolbar.findViewById(R.id.title_toolbar);
+        TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
+        title.setText(studentName);
             ImageButton backButton = findViewById(R.id.back);
 
-
-            Log.d("SheetActivity", "className: " + className);
-            Log.d("SheetActivity", "subjectName: " + subjectName);
-
-            // Set the title and subtitle text
-            title.setText(className);
-            subtitle.setText(subjectName);
-
-            // Set a click listener for the back button
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -102,5 +103,10 @@ public class AbsentDetailsActivity extends AppCompatActivity {
                     onBackPressed();
                 }
             });
+
+        // Hide the save button
+        ImageButton saveButton = findViewById(R.id.save);
+        saveButton.setVisibility(View.GONE);
+        subtitle.setVisibility(View.GONE);
         }
 }

@@ -21,12 +21,15 @@ public class MyDialog extends DialogFragment {
     public static final String STUDENT_ADD_DIALOG = "addStudent";
     public static final String STUDENT_UPDATE_DIALOG = "updateStudent";
     private final String name;
+    private int apogee;
     private OnClickListener listener;
 
+    private StudentDialogListener listener1;
     private int roll;
-    public MyDialog(int roll, String name) {
+    public MyDialog(int roll, String name,int apogee) {
         this.roll=roll;
         this.name=name;
+        this.apogee=apogee;
     }
 
     public MyDialog() {
@@ -38,6 +41,15 @@ public class MyDialog extends DialogFragment {
     public interface OnClickListener{
         void onClick(String text1, String text2);
     }
+
+    public interface StudentDialogListener {
+        void onStudentDialogClick(String roll, String name, String apogee);
+    }
+
+    public void setListener1(StudentDialogListener listener1) {
+        this.listener1 = listener1;
+    }
+
 
     public void setListener(OnClickListener listener) {
         this.listener = listener;
@@ -59,7 +71,7 @@ public class MyDialog extends DialogFragment {
 
     private Dialog getUpdateStudentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_student, null);
 
         builder.setView(view);
 
@@ -69,9 +81,11 @@ public class MyDialog extends DialogFragment {
 
         EditText roll_edt = view.findViewById(R.id.edt01);
         EditText name_edt = view.findViewById(R.id.edt02);
+        EditText apogee_edt = view.findViewById(R.id.apogee);
 
         roll_edt.setHint("Roll");
         name_edt.setHint("Name");
+        apogee_edt.setHint("Apogée");
 
         Button cancel = view.findViewById(R.id.cancel_btn);
         Button add = view.findViewById(R.id.add_btn);
@@ -79,13 +93,15 @@ public class MyDialog extends DialogFragment {
         roll_edt.setText(roll+"");
         roll_edt.setEnabled(false);
         name_edt.setText(name);
+        apogee_edt.setText(apogee+"");
 
         cancel.setOnClickListener(v-> dismiss());
         add.setOnClickListener(v-> {
             String roll = roll_edt.getText().toString();
             String name  = name_edt.getText().toString();
+            String apogee = apogee_edt.getText().toString();
 
-            listener.onClick(roll,name);
+            listener1.onStudentDialogClick(roll,name,apogee);
             dismiss();
 
         });
@@ -125,7 +141,7 @@ public class MyDialog extends DialogFragment {
 
     private Dialog getAddStudentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_student, null);
 
         builder.setView(view);
 
@@ -135,9 +151,14 @@ public class MyDialog extends DialogFragment {
 
         EditText roll_edt = view.findViewById(R.id.edt01);
         EditText name_edt = view.findViewById(R.id.edt02);
+        EditText apogee_edt = view.findViewById(R.id.apogee);
+
 
         roll_edt.setHint("Roll");
         name_edt.setHint("Name");
+        apogee_edt.setHint("Apogée");
+
+
 
         Button cancel = view.findViewById(R.id.cancel_btn);
         Button add = view.findViewById(R.id.add_btn);
@@ -146,9 +167,13 @@ public class MyDialog extends DialogFragment {
         add.setOnClickListener(v-> {
             String roll = roll_edt.getText().toString();
             String name  = name_edt.getText().toString();
+            String  apogee = apogee_edt.getText().toString();
+
             roll_edt.setText(String.valueOf(Integer.parseInt(roll)+1));
             name_edt.setText("");
-            listener.onClick(roll,name);
+            apogee_edt.setText("");
+            listener1.onStudentDialogClick(roll, name, apogee);
+
 
         });
         return builder.create();
