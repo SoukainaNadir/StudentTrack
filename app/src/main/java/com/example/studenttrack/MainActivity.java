@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
         DB= new DBHelper(this);
 
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     field.setVisibility(View.GONE);
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // Do nothing
@@ -65,18 +65,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         register.setOnClickListener(new View.OnClickListener() {
-
-            private void updateFieldVisibility(String userType) {
-                if (userType.equals("Student")) {
-                    course.setVisibility(View.GONE);
-                    apogee.setVisibility(View.VISIBLE);
-                    field.setVisibility(View.VISIBLE);
-                } else if (userType.equals("Professor")) {
-                    course.setVisibility(View.VISIBLE);
-                    apogee.setVisibility(View.GONE);
-                    field.setVisibility(View.GONE);
-                }
-            }
             @Override
             public void onClick(View v) {
                 String user = username.getText().toString();
@@ -88,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
                 String apogeeValue = apogee.getText().toString();
                 String fieldValue = field.getText().toString();
                 String courseValue = course.getText().toString();
-
-
-
 
                 if (TextUtils.isEmpty(user) || TextUtils.isEmpty(pass) || TextUtils.isEmpty(repass) || TextUtils.isEmpty(emailValue)) {
                     Toast.makeText(MainActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
@@ -117,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     if (DB.checkUsername(user)) {
                         Toast.makeText(MainActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
                     } else {
-                        Boolean insert = DB.insertData(user, pass, userType, fieldValue, apogeeValue, courseValue,emailValue);
+                        Boolean insert = DB.insertData(user, pass, userType, fieldValue, apogeeValue, courseValue, emailValue);
 
                         if (insert) {
                             Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
@@ -126,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                                 startActivity(intent);
                             } else if (userType.equals("Student")) {
                                 Intent intent = new Intent(getApplicationContext(), HomeStudentActivity.class);
+                                intent.putExtra("username", user);
                                 startActivity(intent);
                             }
                         } else {
@@ -133,29 +119,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-
-                String selectedUserType = spinner.getSelectedItem().toString();
-                updateFieldVisibility(selectedUserType);
-
-                if (selectedUserType.equals("Student")) {
-                    if (TextUtils.isEmpty(apogeeValue)) {
-                        Toast.makeText(MainActivity.this, "Apogee is required", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (TextUtils.isEmpty(fieldValue)) {
-                        Toast.makeText(MainActivity.this, "Field is required", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                } else if (selectedUserType.equals("Professor")) {
-                    if (TextUtils.isEmpty(courseValue)) {
-                        Toast.makeText(MainActivity.this, "Course is required", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
             }
         });
-
 
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,8 +129,5 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
     }
 }

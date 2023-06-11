@@ -37,13 +37,29 @@ public class LoginActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(user) || TextUtils.isEmpty(pass)) {
                     Toast.makeText(LoginActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
                 } else {
-                    Boolean checkuserpass = DB.checkUsernamePassword(user, pass);
-                    if (checkuserpass == true) {
-                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), HomeProfActivity.class);
-                        startActivity(intent);
+                    String userType = DB.getUserType(user); // Get the user type from the DBHelper
+
+                    if (userType.equals("Professor")) {
+                        Boolean checkuserpass = DB.checkUsernamePassword(user, pass);
+                        if (checkuserpass) {
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), HomeProfActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (userType.equals("Student")) {
+                        Boolean checkuserpass = DB.checkUsernamePassword(user, pass);
+                        if (checkuserpass) {
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), HomeStudentActivity.class);
+                            intent.putExtra("username", user);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "User not found", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
