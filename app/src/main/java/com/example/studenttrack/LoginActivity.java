@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password1);
         signin = findViewById(R.id.signin1);
 
+
         DB = new DBHelper(this);
 
 
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (userType.equals("Professor")) {
                         Boolean checkuserpass = DB.checkUsernamePassword(user, pass);
                         if (checkuserpass) {
+
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), HomeProfActivity.class);
                             startActivity(intent);
@@ -51,9 +53,11 @@ public class LoginActivity extends AppCompatActivity {
                     } else if (userType.equals("Student")) {
                         Boolean checkuserpass = DB.checkUsernamePassword(user, pass);
                         if (checkuserpass) {
+                            String apogee = DB.getApogee(user);
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), HomeStudentActivity.class);
                             intent.putExtra("username", user);
+                            intent.putExtra("apogee", apogee);
                             startActivity(intent);
                         } else {
                             Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();

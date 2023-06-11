@@ -39,10 +39,5 @@ public class Classitem {
         this.cid = cid;
     }
 
-    public Classitem(String className, String subjectName){
-        this.className = className;
-        this.subjectName = subjectName;
-
-    }
 
 }

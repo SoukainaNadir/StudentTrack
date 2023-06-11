@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                             } else if (userType.equals("Student")) {
                                 Intent intent = new Intent(getApplicationContext(), HomeStudentActivity.class);
                                 intent.putExtra("username", user);
+                                intent.putExtra("apogee", apogeeValue);
                                 startActivity(intent);
                             }
                         } else {

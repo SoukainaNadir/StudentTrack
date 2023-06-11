@@ -12,6 +12,9 @@
         android:theme="@style/Theme.StudentTrack"
         tools:targetApi="31">
         <activity
+            android:name=".CheckAbsencesActivity"
+            android:exported="false" />
+        <activity
             android:name=".StartActivity"
             android:exported="true">
             <intent-filter>
@@ -19,7 +22,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".AbsentDetailsActivity"
@@ -44,7 +46,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>

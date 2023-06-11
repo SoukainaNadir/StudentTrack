@@ -22,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //class table
 
-    private static final String CLASS_TABLE_NAME = "CLASS_TABLE";
+    public static final String CLASS_TABLE_NAME = "CLASS_TABLE";
     public static final String C_ID = "_CID";
     public static final String CLASS_NAME_KEY = "CLASS_NAME";
     public static final String SUBJECT_NAME_KEY = "SUBJECT_NAME";
@@ -128,9 +128,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     Cursor getClassTable(){
         SQLiteDatabase database = this.getReadableDatabase();
-
         return database.rawQuery(SELECT_CLASS_TABLE,null);
     }
+    Cursor getStatusTable(){
+        SQLiteDatabase database = this.getReadableDatabase();
+        return database.rawQuery(SELECT_STATUS_TABLE,null);
+    }
+
 
 
     public Boolean insertData(String username, String password, String userType, String course, String apogee, String field, String email) {
@@ -217,7 +221,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     int deleteStudent(long sid){
         SQLiteDatabase database = this.getReadableDatabase();
-        return database.delete(STUDENT_TABLE_NAME,S_ID+"=?",new String[]{String.valueOf(sid)});
+        return database.delete(STUDENT_TABLE_NAME, S_ID +"=?",new String[]{String.valueOf(sid)});
     }
 
     long updateStudent(long sid, String name, int apogee){
@@ -226,7 +230,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(STUDENT_NAME_KEY,name);
         values.put(COLUMN_APOGEE,apogee);
 
-        return database.update(STUDENT_TABLE_NAME,values,S_ID+"=?",new String[]{String.valueOf(sid)});
+        return database.update(STUDENT_TABLE_NAME,values, S_ID +"=?",new String[]{String.valueOf(sid)});
     }
     long addStatus(long sid,long cid ,String date,String status){
         SQLiteDatabase database = this.getWritableDatabase();
@@ -242,7 +246,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(STATUS_KEY,status);
-        String whereClause = DATE_KEY+"='"+date+"' AND "+S_ID+"="+sid;
+        String whereClause = DATE_KEY+"='"+date+"' AND "+ S_ID +"="+sid;
         return database.update(STATUS_TABLE_NAME, values,whereClause,null);
     }
 
@@ -250,7 +254,7 @@ public class DBHelper extends SQLiteOpenHelper {
     String getStatus(long sid, String date){
         String status= null;
         SQLiteDatabase database = this.getReadableDatabase();
-        String whereClause = DATE_KEY+"='"+date+"' AND "+S_ID+"="+sid;
+        String whereClause = DATE_KEY+"='"+date+"' AND "+ S_ID +"="+sid;
         Cursor cursor = database.query(STATUS_TABLE_NAME,null,whereClause,null,null,null,null);
         if (cursor.moveToFirst())
             status = cursor.getString(cursor.getColumnIndexOrThrow(STATUS_KEY));
@@ -286,6 +290,76 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = database.query(STATUS_TABLE_NAME, columns, selection, selectionArgs, groupBy, null, null);
         return cursor;
     }
+
+    public String getApogee(String username) {
+        String apogee = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + COLUMN_APOGEE + " FROM " + TABLE_USERS +
+                " WHERE " + COLUMN_USERNAME + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+        if (cursor.moveToFirst()) {
+            apogee = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APOGEE));
+        }
+        cursor.close();
+        return apogee;
+    }
+
+    public String getApogeeForUser(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String apogee = "";
+
+        String[] projection = {COLUMN_APOGEE};
+        String selection = COLUMN_USERNAME + " = ?";
+        String[] selectionArgs = {username};
+
+        Cursor cursor = db.query(TABLE_USERS, projection, selection, selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            apogee = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APOGEE));
+        }
+
+        cursor.close();
+        return apogee;
+    }
+
+    public String getSubjectName(String username) {
+        SQLiteDatabase db = getReadableDatabase();
+        String subjectName = null;
+
+        String[] columns = {DBHelper.COLUMN_APOGEE};
+        String selection = DBHelper.COLUMN_USERNAME + " = ?";
+        String[] selectionArgs = {username};
+
+        Cursor userCursor = db.query(DBHelper.TABLE_USERS, columns, selection, selectionArgs, null, null, null);
+        if (userCursor.moveToFirst()) {
+            int apogee = userCursor.getInt(userCursor.getColumnIndexOrThrow(DBHelper.COLUMN_APOGEE));
+            userCursor.close();
+
+            String[] studentColumns = {DBHelper.S_ID};
+            String studentSelection = DBHelper.COLUMN_APOGEE + " = ?";
+            String[] studentSelectionArgs = {String.valueOf(apogee)};
+
+            Cursor studentCursor = db.query(DBHelper.STUDENT_TABLE_NAME, studentColumns, studentSelection, studentSelectionArgs, null, null, null);
+            if (studentCursor.moveToFirst()) {
+                int sId = studentCursor.getInt(studentCursor.getColumnIndexOrThrow(DBHelper.S_ID));
+                studentCursor.close();
+
+                String[] statusColumns = {DBHelper.SUBJECT_NAME_KEY};
+                String statusSelection = DBHelper.S_ID + " = ?";
+                String[] statusSelectionArgs = {String.valueOf(sId)};
+
+                Cursor statusCursor = db.query(DBHelper.STATUS_TABLE_NAME, statusColumns, statusSelection, statusSelectionArgs, null, null, null);
+                if (statusCursor.moveToFirst()) {
+                    subjectName = statusCursor.getString(statusCursor.getColumnIndexOrThrow(DBHelper.SUBJECT_NAME_KEY));
+                }
+                statusCursor.close();
+            }
+            studentCursor.close();
+        }
+        userCursor.close();
+
+        return subjectName;
+    }
+
 
 
 
