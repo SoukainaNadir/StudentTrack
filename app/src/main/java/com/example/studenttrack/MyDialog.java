@@ -1,5 +1,6 @@
 package com.example.studenttrack;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,11 +21,16 @@ public class MyDialog extends DialogFragment {
     public static final String CLASS_UPDATE_DIALOG = "updateClass";
     public static final String STUDENT_ADD_DIALOG = "addStudent";
     public static final String STUDENT_UPDATE_DIALOG = "updateStudent";
+    public static final String STUDENT_JUSTIFICATION = "justificationStudent";
     private final String name;
     private int apogee;
     private OnClickListener listener;
 
     private StudentDialogListener listener1;
+    private JustificationDialogListener listener2;
+
+    private String justification;
+
     private int roll;
     public MyDialog(int roll, String name,int apogee) {
         this.roll=roll;
@@ -33,7 +39,6 @@ public class MyDialog extends DialogFragment {
     }
 
     public MyDialog() {
-
         name = null;
     }
 
@@ -46,9 +51,17 @@ public class MyDialog extends DialogFragment {
         void onStudentDialogClick(String roll, String name, String apogee);
     }
 
+    public interface JustificationDialogListener {
+        void onJustuficationDialogClick(String justification);
+    }
+
     public void setListener1(StudentDialogListener listener1) {
         this.listener1 = listener1;
     }
+    public void setListener2(JustificationDialogListener listener2) {
+        this.listener2 = listener2;
+    }
+
 
 
     public void setListener(OnClickListener listener) {
@@ -63,11 +76,49 @@ public class MyDialog extends DialogFragment {
         if (getTag().equals(STUDENT_ADD_DIALOG))dialog=getAddStudentDialog();
         if (getTag().equals(CLASS_UPDATE_DIALOG))dialog=getUpdateClassDialog();
         if (getTag().equals(STUDENT_UPDATE_DIALOG))dialog=getUpdateStudentDialog();
+        if (getTag().equals(STUDENT_JUSTIFICATION))dialog=getJustificationDialog();
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         return dialog;
     }
+
+    private Dialog getJustificationDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_justification, null);
+
+        builder.setView(view);
+
+        TextView title = view.findViewById(R.id.titleDialog);
+        Button outputBtn = view.findViewById(R.id.output_btn);
+        TextView pdfNameTextView = view.findViewById(R.id.pdfNameTextView);
+
+        title.setText("Add Justification");
+
+        EditText justification = view.findViewById(R.id.edt01);
+
+
+        justification.setHint("Justification");
+
+
+
+
+        Button cancel = view.findViewById(R.id.cancel_btn);
+        Button add = view.findViewById(R.id.send_btn);
+
+
+        cancel.setOnClickListener(v-> dismiss());
+        add.setOnClickListener(v -> {
+            String justificationText = justification.getText().toString();
+            listener2.onJustuficationDialogClick(justificationText);
+            dismiss();
+        });
+
+
+        return builder.create();
+    }
+
 
     private Dialog getUpdateStudentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -148,12 +199,10 @@ public class MyDialog extends DialogFragment {
         TextView title = view.findViewById(R.id.titleDialog);
         title.setText("Add New Student");
 
-
         EditText roll_edt = view.findViewById(R.id.edt01);
         EditText name_edt = view.findViewById(R.id.edt02);
         EditText apogee_edt = view.findViewById(R.id.apogee);
-
-
+        
         roll_edt.setHint("Roll");
         name_edt.setHint("Name");
         apogee_edt.setHint("Apogée");

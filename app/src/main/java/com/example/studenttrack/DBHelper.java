@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper {
     public static final String DBNAME = "absent.db";
@@ -69,19 +72,42 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String STATUS_KEY = "STATUS";
 
     private static final String CREATE_STATUS_TABLE =
-        "CREATE TABLE "+ STATUS_TABLE_NAME +
-                "("+
-                STATUS_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "+
-                S_ID + " INTEGER NOT NULL, "+
-                C_ID + " INTEGER NOT NULL, "+
-                DATE_KEY + " DATE NOT NULL, "+
-                STATUS_KEY + " TEXT NOT NULL, "+
-                "UNIQUE ("+ S_ID + "," +DATE_KEY+"),"+
-                " FOREIGN KEY ( "+C_ID+") REFERENCES "+ CLASS_TABLE_NAME + "("+C_ID+")"+
-                ");";
+            "CREATE TABLE "+ STATUS_TABLE_NAME +
+                    "("+
+                    STATUS_ID+" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "+
+                    S_ID + " INTEGER NOT NULL, "+
+                    C_ID + " INTEGER NOT NULL, "+
+                    DATE_KEY + " DATE NOT NULL, "+
+                    STATUS_KEY + " TEXT NOT NULL, "+
+                    "UNIQUE ("+ S_ID + "," +DATE_KEY+"),"+
+                    "FOREIGN KEY ( "+C_ID+") REFERENCES "+ CLASS_TABLE_NAME + "("+C_ID+")"+
+                    ");";
 
     private static final String DROP_STATUS_TABLE = "DROP TABLE IF EXISTS "+STATUS_TABLE_NAME;
     private static final String SELECT_STATUS_TABLE = "SELECT * FROM "+STATUS_TABLE_NAME;
+
+    //Justification TABLE
+
+    public static final String JUSTIFICATION_TABLE_NAME  ="JUSTIFICATION_TABLE";
+
+    public static final String JUSTIFICATION_ID = "JUSTIFICATION_ID";
+    public static final String JUSTIFICATION_TEXT = "JUSTIFICATION_TEXT";
+    public static final String PDF_FILE_PATH = "PDF_FILE_PATH";
+
+
+
+    private static final String CREATE_JUSTIFICATION_TABLE =
+            "CREATE TABLE " + JUSTIFICATION_TABLE_NAME + "(" +
+                    JUSTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    S_ID + " INTEGER NOT NULL, " +
+                    JUSTIFICATION_TEXT + " TEXT, " +
+                    PDF_FILE_PATH + " TEXT, " +
+                    "FOREIGN KEY (" + S_ID + ") REFERENCES " + STUDENT_TABLE_NAME + "(" + S_ID + ")" +
+                    ");";
+
+    private static final String DROP_JUSTIFICATION_TABLE = "DROP TABLE IF EXISTS "+JUSTIFICATION_TABLE_NAME;
+    private static final String SELECT_JUSTIFICATION_TABLE = "SELECT * FROM "+JUSTIFICATION_TABLE_NAME;
+
     public DBHelper(Context context) {
         super(context, DBNAME, null, 3);
     }
@@ -100,6 +126,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_CLASS_TABLE);
         db.execSQL(CREATE_STUDENT_TABLE);
         db.execSQL(CREATE_STATUS_TABLE);
+        db.execSQL(CREATE_JUSTIFICATION_TABLE);
     }
 
 
@@ -111,6 +138,7 @@ public class DBHelper extends SQLiteOpenHelper {
             db.execSQL(DROP_CLASS_TABLE);
             db.execSQL(DROP_STUDENT_TABLE);
             db.execSQL(DROP_STATUS_TABLE);
+            db.execSQL(DROP_JUSTIFICATION_TABLE);
 
         }catch (SQLException e){
             e.printStackTrace();
@@ -321,44 +349,41 @@ public class DBHelper extends SQLiteOpenHelper {
         return apogee;
     }
 
-    public String getSubjectName(String username) {
-        SQLiteDatabase db = getReadableDatabase();
-        String subjectName = null;
+    public ArrayList<AbsenceDetails> getAbsencesByUserApogee(String userApogee) {
+        ArrayList<AbsenceDetails> absences = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
 
-        String[] columns = {DBHelper.COLUMN_APOGEE};
-        String selection = DBHelper.COLUMN_USERNAME + " = ?";
-        String[] selectionArgs = {username};
+        String query = "SELECT " + STATUS_TABLE_NAME + "." + STATUS_KEY + ", " + STATUS_TABLE_NAME + "." + DATE_KEY + ", " + CLASS_TABLE_NAME + "." + SUBJECT_NAME_KEY +
+                " FROM " + STATUS_TABLE_NAME +
+                " INNER JOIN " + STUDENT_TABLE_NAME +
+                " ON " + STATUS_TABLE_NAME + "." + S_ID + " = " + STUDENT_TABLE_NAME + "." + S_ID +
+                " INNER JOIN " + CLASS_TABLE_NAME +
+                " ON " + STUDENT_TABLE_NAME + "." + C_ID + " = " + CLASS_TABLE_NAME + "." + C_ID +
+                " WHERE " + STUDENT_TABLE_NAME + "." + COLUMN_APOGEE + " = '" + userApogee + "'" +
+                " AND " + STATUS_TABLE_NAME + "." + STATUS_KEY + " = 'A'";
+        
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                String absenceStatus = cursor.getString(cursor.getColumnIndexOrThrow(STATUS_KEY));
+                String subjectName = cursor.getString(cursor.getColumnIndexOrThrow(SUBJECT_NAME_KEY));
+                String date = cursor.getString(cursor.getColumnIndexOrThrow(DATE_KEY));
 
-        Cursor userCursor = db.query(DBHelper.TABLE_USERS, columns, selection, selectionArgs, null, null, null);
-        if (userCursor.moveToFirst()) {
-            int apogee = userCursor.getInt(userCursor.getColumnIndexOrThrow(DBHelper.COLUMN_APOGEE));
-            userCursor.close();
-
-            String[] studentColumns = {DBHelper.S_ID};
-            String studentSelection = DBHelper.COLUMN_APOGEE + " = ?";
-            String[] studentSelectionArgs = {String.valueOf(apogee)};
-
-            Cursor studentCursor = db.query(DBHelper.STUDENT_TABLE_NAME, studentColumns, studentSelection, studentSelectionArgs, null, null, null);
-            if (studentCursor.moveToFirst()) {
-                int sId = studentCursor.getInt(studentCursor.getColumnIndexOrThrow(DBHelper.S_ID));
-                studentCursor.close();
-
-                String[] statusColumns = {DBHelper.SUBJECT_NAME_KEY};
-                String statusSelection = DBHelper.S_ID + " = ?";
-                String[] statusSelectionArgs = {String.valueOf(sId)};
-
-                Cursor statusCursor = db.query(DBHelper.STATUS_TABLE_NAME, statusColumns, statusSelection, statusSelectionArgs, null, null, null);
-                if (statusCursor.moveToFirst()) {
-                    subjectName = statusCursor.getString(statusCursor.getColumnIndexOrThrow(DBHelper.SUBJECT_NAME_KEY));
-                }
-                statusCursor.close();
-            }
-            studentCursor.close();
+                AbsenceDetails absenceDetails = new AbsenceDetails(0, date, absenceStatus, subjectName);
+                absences.add(absenceDetails);
+            } while (cursor.moveToNext());
         }
-        userCursor.close();
 
-        return subjectName;
+        cursor.close();
+        return absences;
     }
+
+
+
+
+
+
+
 
 
 

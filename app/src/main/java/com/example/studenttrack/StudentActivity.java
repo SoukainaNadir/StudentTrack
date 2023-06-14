@@ -110,7 +110,6 @@ public class StudentActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(menuItem->onMenuItemClick(menuItem));
 
     }
-
     private void saveStatus(){
         for(Studentitem studentitem : studentitems){
             String status = studentitem.getStatus();
@@ -131,8 +130,6 @@ public class StudentActivity extends AppCompatActivity {
             else studentitem.setStatus("");
         }
         adapter.notifyDataSetChanged();
-
-
     }
 
 
@@ -175,7 +172,6 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     private void showCalendar() {
-
         calendar.show(getSupportFragmentManager(),"");
         calendar.setOnCalendarOkClickListener(this::onCalendarOkClicked);
     }

@@ -35,9 +35,6 @@
             android:text="Subject Name"
             android:textSize="15sp"
             android:textColor="#5E5858"/>
-
-
-
         </LinearLayout>
     </RelativeLayout>
 

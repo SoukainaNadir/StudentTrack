@@ -6,6 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -19,45 +23,76 @@ public class CheckAbsencesActivity extends AppCompatActivity {
     DBHelper dbHelper;
     String username;
 
+    private ArrayList<justificationitem> justificationitems = new ArrayList<>();
+
+    private long sid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_absences);
 
+        absenceDetailsList = new ArrayList<>();
+
         username = getIntent().getStringExtra("username");
         dbHelper = new DBHelper(this);
-        loadData();
+
         check_absences = findViewById(R.id.check_absences);
         layoutManager = new LinearLayoutManager(this);
         check_absences.setLayoutManager(layoutManager);
         adapter = new AbsenceDetailsAdapter(this, absenceDetailsList);
         check_absences.setAdapter(adapter);
+        loadData();
+
+
 
     }
 
     private void loadData() {
-        Cursor cursor = dbHelper.getStatusTable();
 
         absenceDetailsList.clear();
-        int idColumnIndex = cursor.getColumnIndex(DBHelper.S_ID);
-        int dateColumnIndex = cursor.getColumnIndex(DBHelper.DATE_KEY);
-        int statusColumnIndex = cursor.getColumnIndex(DBHelper.STATUS_KEY);
 
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(idColumnIndex);
-            String date = (dateColumnIndex != -1) ? cursor.getString(dateColumnIndex) : null;
-            String status = (statusColumnIndex != -1) ? cursor.getString(statusColumnIndex) : null;
+        String userApogee = dbHelper.getApogeeForUser(username);
 
-            int apogee = dbHelper.getStudentApogee(id);
-            String userApogee = dbHelper.getApogeeForUser(username);
-            String subjectName = dbHelper.getSubjectName(username);
+        // Replace "userApogee" with the actual user's apogee value
+        ArrayList<AbsenceDetails> retrievedList = dbHelper.getAbsencesByUserApogee(userApogee);
 
-            if (String.valueOf(apogee).equals(userApogee)&& "A".equals(status)) {
-                absenceDetailsList.add(new AbsenceDetails(id, date, status,subjectName));
-            }
-        }
+        absenceDetailsList.addAll(retrievedList);
+
+        // Notify the adapter that the data has changed
+        adapter.notifyDataSetChanged();
+
     }
+
+    @Override
+    public boolean onContextItemSelected(@Nullable MenuItem item) {
+        switch (item.getItemId()){
+            case 0:
+                justifyDialog(item.getGroupId());
+                break;
+
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    private void justifyDialog(int position) {
+        MyDialog dialog = new MyDialog();
+        dialog.show(getSupportFragmentManager(),MyDialog.STUDENT_JUSTIFICATION);
+        dialog.setListener2((justification) -> addJustification(position,justification));
+    }
+
+    private void addJustification(int position,String justification) {
+
+        
+
+    }
+
+
 }
+
+
+
 
 
 

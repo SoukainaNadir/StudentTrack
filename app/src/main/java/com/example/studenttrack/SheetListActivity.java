@@ -56,8 +56,7 @@ public class SheetListActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.back);
 
 
-        Log.d("SheetActivity", "className: " + className);
-        Log.d("SheetActivity", "subjectName: " + subjectName);
+
 
         // Set the title and subtitle text
         title.setText(className);

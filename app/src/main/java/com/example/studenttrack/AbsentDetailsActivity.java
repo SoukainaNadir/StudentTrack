@@ -36,12 +36,6 @@ public class AbsentDetailsActivity extends AppCompatActivity {
         roll = getIntent().getIntExtra("roll", 0);
         apogee = getIntent().getIntExtra("apogee", 0);
 
-
-
-
-
-
-
         rollTextView = findViewById(R.id.roll_textview);
         rollTextView.setText(String.valueOf(roll));
 
@@ -58,8 +52,6 @@ public class AbsentDetailsActivity extends AppCompatActivity {
 
         // Find the TextView in your layout
         attendance_count_textview = findViewById(R.id.attendance_count_textview);
-
-
         // Retrieve the cursor with absence count for each student
         Cursor cursor = dbHelper.countStudentAbsences();
 
