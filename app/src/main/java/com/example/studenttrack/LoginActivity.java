@@ -25,6 +25,14 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password1);
         signin = findViewById(R.id.signin1);
 
+        // Retrieve the message from the intent
+        String message = getIntent().getStringExtra("message");
+
+        // Display the success message if available
+        if (message != null) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
+
 
         DB = new DBHelper(this);
 
@@ -53,11 +61,11 @@ public class LoginActivity extends AppCompatActivity {
                     } else if (userType.equals("Student")) {
                         Boolean checkuserpass = DB.checkUsernamePassword(user, pass);
                         if (checkuserpass) {
-                            String apogee = DB.getApogee(user);
+                            String apogeeValue = DB.getApogee(user);
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), HomeStudentActivity.class);
                             intent.putExtra("username", user);
-                            intent.putExtra("apogee", apogee);
+                            intent.putExtra("apogee", apogeeValue);
                             startActivity(intent);
                         } else {
                             Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();

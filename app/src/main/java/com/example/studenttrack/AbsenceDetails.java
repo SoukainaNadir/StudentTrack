@@ -6,6 +6,7 @@ public class AbsenceDetails {
     private String status;
     private String subjectName;
 
+
     public String getSubjectName() {
         return subjectName;
     }
@@ -21,6 +22,7 @@ public class AbsenceDetails {
         this.date = date;
         this.status = status;
         this.subjectName = subjectName;
+
     }
 
 
@@ -47,5 +49,7 @@ public class AbsenceDetails {
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 }
 

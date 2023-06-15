@@ -107,7 +107,8 @@
             android:layout_marginBottom="10dp"
             android:background="#30000000"
             android:padding="20dp"
-            style="@style/SpinnerStyle" />
+            android:entries="@array/usertype"
+             />
 
 
         <EditText

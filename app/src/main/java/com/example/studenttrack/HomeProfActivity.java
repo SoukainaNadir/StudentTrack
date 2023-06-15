@@ -80,11 +80,30 @@ public class HomeProfActivity extends AppCompatActivity {
         TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
         ImageButton back = toolbar.findViewById(R.id.back);
         ImageButton save = toolbar.findViewById(R.id.save);
+        ImageButton logout = toolbar.findViewById(R.id.logout);
+
+        ImageButton logoutButton = findViewById(R.id.logout);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle logout button click
+                performLogout();
+            }
+        });
+
 
         title.setText("StudentTrack");
         subtitle.setVisibility(View.GONE);
         back.setVisibility(View.INVISIBLE);
         save.setVisibility(View.INVISIBLE);
+    }
+    private void performLogout() {
+
+        Intent intent = new Intent(HomeProfActivity.this, LoginActivity.class);
+        intent.putExtra("message", "Logout successful");
+        startActivity(intent);
+
+        finish();
     }
 
     private void gotoItemActivity(int position) {

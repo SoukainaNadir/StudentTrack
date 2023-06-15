@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray">
+    <include
+        layout="@layout/toolbar"/>
 
     <TextView
         android:id="@+id/welcome_text"
@@ -12,7 +14,7 @@
         android:text="username!"
         android:textSize="24sp"
         android:textColor="@color/black"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="80dp"
         android:layout_marginStart="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

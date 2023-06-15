@@ -48,6 +48,17 @@
             android:textColor="#000000"
             android:textSize="20sp"
             android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/justifiedTextView"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="65dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Absence Justified"
+            android:layout_marginRight="36dp"
+            android:textColor="#4CAF50"
+            android:visibility="invisible" />
+
     </RelativeLayout>
 
 

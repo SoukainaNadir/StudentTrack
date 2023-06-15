@@ -74,6 +74,8 @@ public class SheetListActivity extends AppCompatActivity {
         // Hide the save button
         ImageButton saveButton = findViewById(R.id.save);
         saveButton.setVisibility(View.GONE);
+        ImageButton logout = findViewById(R.id.logout);
+        logout.setVisibility(View.GONE);
     }
     private void openSheetActivity(int position) {
         long[] idArray = getIntent().getLongArrayExtra("idArray");

@@ -30,28 +30,12 @@
             android:layout_marginTop="8dp"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/email_label_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/roll_textview"
-            android:text="Email:"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/email_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/email_label_textview"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/cne_label_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/email_textview"
+            android:layout_below="@id/roll_textview"
             android:layout_marginTop="16dp"
             android:text="APOGÉE:"
             android:textSize="18sp"
@@ -65,30 +49,14 @@
             android:layout_marginTop="8dp"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/justification_label_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/apogee_textview"
-            android:layout_marginTop="16dp"
-            android:text="Justification:"
-            android:textSize="18sp"
-            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/justification_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/justification_label_textview"
-            android:layout_marginTop="8dp"
-            android:textSize="16sp" />
 
 
        <TextView
            android:id="@+id/attendance_count_label_textview"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:layout_below="@id/justification_textview"
+           android:layout_below="@id/apogee_textview"
            android:layout_marginTop="16dp"
            android:text="Absence Count:"
            android:textSize="18sp"

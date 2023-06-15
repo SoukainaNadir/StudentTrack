@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -98,6 +99,7 @@ public class StudentActivity extends AppCompatActivity {
         subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
         ImageButton back = toolbar.findViewById(R.id.back);
         ImageButton save = toolbar.findViewById(R.id.save);
+        ImageButton logout = toolbar.findViewById(R.id.logout);
         save.setOnClickListener(v->saveStatus());
         Log.d("SheetActivity", "className: " + className);
         Log.d("SheetActivity", "subjectName: " + subjectName);
@@ -108,6 +110,8 @@ public class StudentActivity extends AppCompatActivity {
         back.setOnClickListener(v->onBackPressed());
         toolbar.inflateMenu(R.menu.student_menu);
         toolbar.setOnMenuItemClickListener(menuItem->onMenuItemClick(menuItem));
+
+        logout.setVisibility(View.GONE);
 
     }
     private void saveStatus(){

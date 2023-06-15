@@ -7,5 +7,6 @@
     <string name="start_button_label">Start</string>
     <string name="welcome_text">Welcome to Student Track,</string>
     <string name="tagline_textview">Your Reliable Attendance Tracker. </string>
+    <string name="logout">LogOut </string>
 
 </resources>

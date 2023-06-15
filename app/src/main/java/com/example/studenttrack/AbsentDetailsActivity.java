@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,7 +24,9 @@ public class AbsentDetailsActivity extends AppCompatActivity {
     private DBHelper dbHelper;
     private TextView attendance_count_textview;
 
-    private int studentId;
+    
+    private TextView justificationTextView;
+    private String pdfFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class AbsentDetailsActivity extends AppCompatActivity {
         studentName = getIntent().getStringExtra("studentName");
         roll = getIntent().getIntExtra("roll", 0);
         apogee = getIntent().getIntExtra("apogee", 0);
+
 
         rollTextView = findViewById(R.id.roll_textview);
         rollTextView.setText(String.valueOf(roll));
@@ -77,11 +81,14 @@ public class AbsentDetailsActivity extends AppCompatActivity {
     }
 
 
+
+
     private void setToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         TextView title = toolbar.findViewById(R.id.title_toolbar);
         TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
+
         title.setText(studentName);
             ImageButton backButton = findViewById(R.id.back);
 
@@ -95,7 +102,11 @@ public class AbsentDetailsActivity extends AppCompatActivity {
 
         // Hide the save button
         ImageButton saveButton = findViewById(R.id.save);
+        ImageButton logout = findViewById(R.id.logout);
         saveButton.setVisibility(View.GONE);
+        logout.setVisibility(View.GONE);
+
         subtitle.setVisibility(View.GONE);
+
         }
 }

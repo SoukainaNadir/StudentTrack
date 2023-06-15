@@ -46,6 +46,7 @@ public class SheetActivity extends AppCompatActivity {
         TextView title = toolbar.findViewById(R.id.title_toolbar);
         TextView subtitle = toolbar.findViewById(R.id.subtitle_toolbar);
         ImageButton backButton = findViewById(R.id.back);
+        ImageButton logout = findViewById(R.id.logout);
 
         title.setText(className);
         subtitle.setText(subjectName);
@@ -59,6 +60,7 @@ public class SheetActivity extends AppCompatActivity {
 
         ImageButton saveButton = findViewById(R.id.save);
         saveButton.setVisibility(View.GONE);
+        logout.setVisibility(View.GONE);
     }
 
 

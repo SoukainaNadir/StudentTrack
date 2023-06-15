@@ -1,6 +1,7 @@
 package com.example.studenttrack;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +33,11 @@ public class MainActivity extends AppCompatActivity {
         password=findViewById(R.id.password);
         repassword=findViewById(R.id.repassword);
         email=findViewById(R.id.email);
+
         spinner = findViewById(R.id.spinner);
+
+
+
         apogee = findViewById(R.id.apogee);
         field = findViewById(R.id.field);
         course = findViewById(R.id.course);

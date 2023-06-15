@@ -99,10 +99,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_JUSTIFICATION_TABLE =
             "CREATE TABLE " + JUSTIFICATION_TABLE_NAME + "(" +
                     JUSTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    S_ID + " INTEGER NOT NULL, " +
+                    COLUMN_APOGEE + " INTEGER NOT NULL, " +
                     JUSTIFICATION_TEXT + " TEXT, " +
                     PDF_FILE_PATH + " TEXT, " +
-                    "FOREIGN KEY (" + S_ID + ") REFERENCES " + STUDENT_TABLE_NAME + "(" + S_ID + ")" +
+                    "FOREIGN KEY (" + COLUMN_APOGEE + ") REFERENCES " + STUDENT_TABLE_NAME + "(" + COLUMN_APOGEE + ")" +
                     ");";
 
     private static final String DROP_JUSTIFICATION_TABLE = "DROP TABLE IF EXISTS "+JUSTIFICATION_TABLE_NAME;
@@ -361,13 +361,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 " ON " + STUDENT_TABLE_NAME + "." + C_ID + " = " + CLASS_TABLE_NAME + "." + C_ID +
                 " WHERE " + STUDENT_TABLE_NAME + "." + COLUMN_APOGEE + " = '" + userApogee + "'" +
                 " AND " + STATUS_TABLE_NAME + "." + STATUS_KEY + " = 'A'";
-        
+
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             do {
                 String absenceStatus = cursor.getString(cursor.getColumnIndexOrThrow(STATUS_KEY));
                 String subjectName = cursor.getString(cursor.getColumnIndexOrThrow(SUBJECT_NAME_KEY));
                 String date = cursor.getString(cursor.getColumnIndexOrThrow(DATE_KEY));
+
 
                 AbsenceDetails absenceDetails = new AbsenceDetails(0, date, absenceStatus, subjectName);
                 absences.add(absenceDetails);
@@ -378,18 +379,16 @@ public class DBHelper extends SQLiteOpenHelper {
         return absences;
     }
 
+    public boolean addJustification(long apogee, String justification ) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_APOGEE, apogee);
+        values.put(JUSTIFICATION_TEXT, justification);
 
 
-
-
-
-
-
-
-
-
-
-
+        long result = db.insert(JUSTIFICATION_TABLE_NAME, null, values);
+        return result != -1;
+    }
 
 
 }
